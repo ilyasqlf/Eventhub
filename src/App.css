@@ -157,3 +157,20 @@ nav a.active {
   color: #ffffff;
  
 }
+
+.notif-btn {
+  background-color: #fa9c59fa;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  color: white;
+  
+}
+
+.notif-btn:hover {
+  background-color: #ff8f3e;
+  transform: scale(1.05);
+}

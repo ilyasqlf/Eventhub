@@ -11,6 +11,18 @@ root.render(
   </React.StrictMode>
 );
 
+// index.js ou App.js
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(function(registration) {
+      console.log('Service Worker enregistré avec succès', registration);
+    })
+    .catch(function(err) {
+      console.error('Échec de l’enregistrement du Service Worker', err);
+    });
+}
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></link>
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

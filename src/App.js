@@ -32,6 +32,10 @@ function Navbar() {
         <li>
           <Link to="/events">Billeterie</Link>
         </li>
+
+        <button onClick={askPermission} className="notif-btn">
+                🔔 Notifications
+              </button>
         {!user ? (
           <>
             <li>
@@ -48,6 +52,8 @@ function Navbar() {
               <button className="logout-button" onClick={handleLogout}>
                 <i className="fas fa-sign-out-alt"></i> Déconnexion
               </button>
+              
+
             </li>
           </>
         )}
@@ -55,6 +61,17 @@ function Navbar() {
     </nav>
   );
 }
+
+function askPermission() {
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      console.log('Permission accordée');
+    } else {
+      console.log('Permission refusée');
+    }
+  });
+}
+
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -69,6 +86,8 @@ function App() {
     { id: 3, title: 'Match de Football', date: '30 Mars 2025', location: 'Marseille', image: 'path/to/sports.jpg', lat: 43.296482, lng: 5.36978 },
     { id: 4, title: 'LAN Party', date: '1 Avril 2025', location: 'Lille', image: 'path/to/gaming.jpg', lat: 50.62925, lng: 3.057256 },
   ];
+ 
+  
 
   return (
     <UserProvider>
