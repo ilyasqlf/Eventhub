@@ -1,94 +1,76 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Billeterie.css';
-
-// Images d'exemple - À remplacer par vos propres assets
-import concertImg from '../../assets/concert.jpg';
-import theatreImg from '../../assets/theatre.jpg';
-import sportsImg from '../../assets/sports.jpg';
-import gamingImg from '../../assets/gaming.jpg';
+import axios from '../../Api/config'; // Import d'axios pour les requêtes API
 
 const Billeterie = () => {
-  const location = useLocation();
+  const [events, setEvents] = useState([]); // État pour les événements dynamiques
   const navigate = useNavigate();
-  const selectedEvent = location.state?.selectedEvent;
-  const [showModal, setShowModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const weeklyEvents = [
-    { id: 1, title: 'Festival Electro', date: '30 Avril 2024', location: 'Lyon', image: concertImg, price: '50€' },
-    { id: 2, title: 'Pièce Classique', date: '28 Mars 2024', location: 'Paris', image: theatreImg, price: '30€' },
-    { id: 3, title: 'Match de Football', date: '30 Mars 2024', location: 'Marseille', image: sportsImg, price: '40€' },
-    { id: 4, title: 'LAN Party', date: '1 Avril 2024', location: 'Lille', image: gamingImg, price: '20€' },
+  const staticEvents = [
+    { id: 1, title: 'Festival Electro', date: '31 Mars 2025', location: 'Lyon', image: 'path/to/concert.jpg' },
+    { id: 2, title: 'Pièce Classique', date: '28 Mars 2025', location: 'Paris', image: 'path/to/theatre.jpg' },
+    { id: 3, title: 'Match de Football', date: '30 Mars 2025', location: 'Marseille', image: 'path/to/sports.jpg' },
+    { id: 4, title: 'LAN Party', date: '1 Avril 2025', location: 'Lille', image: 'path/to/gaming.jpg' },
   ];
 
-  const categories = [
-    { name: 'Catégorie 1', price: '50€', color : '#FF6B6B' },
-    { name: 'Catégorie 2', price: '70€', color : '#4ECDC4' },
-    { name: 'Catégorie 3', price: '100€', color : '#45B7D1' },
-  ];
+  // Récupérer les événements dynamiques
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get('/api/evenements'); // Requête API pour récupérer les événements
+        setEvents(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des événements :', error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const handleBuyClick = (event) => {
-    setSelectedCategory(null);
-    setShowModal(true);
-  };
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-  };
-
-  const handlePayClick = () => {
-    navigate('/payment', { state: { selectedCategory, selectedEvent } });
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
+    navigate('/payment', { state: { selectedEvent: event } }); // Redirection vers la page de paiement avec l'événement sélectionné
   };
 
   return (
     <div className="billeterie-container">
       <h1>Billetterie</h1>
-      <section className="weekly-events">
-        <h2>Les événements de la semaine</h2>
+
+      {/* Événements statiques */}
+      <section className="static-events">
+        <h2>Événements en vedette</h2>
         <div className="events-grid">
-          {weeklyEvents.map((event) => (
-            <div key={event.id} className={`event-card ${selectedEvent && selectedEvent.id === event.id ? 'selected' : ''}`}>
-              <div className="event-image-container">
-                <img src={event.image} alt={event.title} />
-                <div className="event-date">{event.date}</div>
-              </div>
-              <div className="event-info">
-                <h3>{event.title}</h3>
-                <p className="event-location">📍 {event.location}</p>
-                <p className="event-price">💰 {event.price}</p>
-                <button className="buy-button" onClick={() => handleBuyClick(event)}>Acheter</button>
-              </div>
+  {events.map((event) => (
+    <div key={event.id} className="event-card">
+      <img src={event.image} alt={event.nom} /> {/* Utilisation du champ `image` */}
+      <h3>{event.nom}</h3>
+      <p>Date: {event.date}</p>
+      <p>Lieu: {event.lieu}</p>
+      <p>Prix: {event.prix}€</p>
+      <button onClick={() => navigate(`/event/${event.id}`)}>Voir détails</button>
+    </div>
+  ))}
+</div>
+      </section>
+
+      {/* Événements dynamiques */}
+      <section className="dynamic-events">
+        <h2>Événements à venir</h2>
+        <div className="events-grid">
+          {events.map((event) => (
+            <div key={event.id} className="event-card">
+              <img src={event.image} alt={event.nom} className="event-image" />
+              <h3>{event.nom}</h3>
+              <p>{event.date}</p>
+              <p>{event.lieu}</p>
+              <p>{event.prix}€</p>
+              <button className="buy-button" onClick={() => handleBuyClick(event)}>
+                Acheter
+              </button>
             </div>
           ))}
         </div>
       </section>
-
-      {showModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <button className="close-button" onClick={handleCloseModal}>X</button>
-            <h2>Choisissez une catégorie</h2>
-            <div className="categories">
-              {categories.map((category) => (
-                <div
-                  key={category.name}
-                  className={`category ${selectedCategory === category ? 'selected' : ''}`}
-                  onClick={() => handleCategorySelect(category)}
-                >
-                  <h3>{category.name}</h3>
-                  <p>{category.price}</p>
-                </div>
-              ))}
-            </div>
-            <button className="pay-button" onClick={handlePayClick} disabled={!selectedCategory}>Payer</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext'; // Import du contexte utilisateur
 import './Payment.css';
 import visaIcon from '../../assets/icons/visa.png';
 import mastercardIcon from '../../assets/icons/mastercard.png';
@@ -10,6 +11,7 @@ import shieldIcon from '../../assets/icons/shield.png';
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useContext(UserContext); // Vérifie si l'utilisateur est connecté
   const selectedEvent = location.state?.selectedEvent;
   const selectedCategory = location.state?.selectedCategory;
 
@@ -18,6 +20,13 @@ const Payment = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [cardNumber, setCardNumber] = useState('');
   const [errors, setErrors] = useState({});
+
+  // Redirige automatiquement les utilisateurs connectés à l'étape 2
+  useEffect(() => {
+    if (user) {
+      setIsGuest(true); // Passe directement à l'étape 2 si l'utilisateur est connecté
+    }
+  }, [user]);
 
   useEffect(() => {
     detectCardType(cardNumber);

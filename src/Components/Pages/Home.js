@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import './Home.css';
+import { eventAPI } from '../../Api/config'; // Import des fonctions API
 
 // Vidéo d'exemple - À remplacer par votre propre vidéo
 import heroVideo from '../../assets/hero-video.mp4';
@@ -13,6 +14,7 @@ import natureImg from '../../assets/nature.jpg';
 
 const Home = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [dynamicEvents, setDynamicEvents] = useState([]); // État pour les événements dynamiques
   const navigate = useNavigate();
 
   const categories = [
@@ -29,6 +31,20 @@ const Home = () => {
     { id: 3, title: 'Match de Football', date: '30 Mars 2024', location: 'Marseille', image: sportsImg, lat: 43.296482, lng: 5.36978 },
     { id: 4, title: 'LAN Party', date: '1 Avril 2024', location: 'Lille', image: gamingImg, lat: 50.62925, lng: 3.057256 },
   ];
+
+  // Récupérer les événements dynamiques depuis l'API
+  useEffect(() => {
+    const fetchDynamicEvents = async () => {
+      try {
+        const response = await eventAPI.getAllEvents(); // Appel à l'API pour récupérer les événements
+        setDynamicEvents(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des événements dynamiques :', error);
+      }
+    };
+
+    fetchDynamicEvents();
+  }, []);
 
   const handleDetailsClick = (event) => {
     setSelectedEvent(event);
@@ -48,8 +64,6 @@ const Home = () => {
 
   return (
     <div className="home-container">
-     
-
       {/* Hero Section */}
       <section className="hero-section">
         <video autoPlay loop muted className="hero-video">
@@ -108,15 +122,36 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Événements dynamiques */}
+      <section className="dynamic-events">
+        <h2>Événements ajoutés récemment</h2>
+        <div className="events-grid">
+          {dynamicEvents.map((event) => (
+            <div key={event.id} className="event-card">
+              <div className="event-image-container">
+                <img src={event.image} alt={event.nom} />
+                <div className="event-date">{event.date}</div>
+              </div>
+              <div className="event-info">
+                <h3>{event.nom}</h3>
+                <p className="event-location">📍 {event.lieu}</p>
+                <button onClick={() => handleDetailsClick(event)} className="details-button">Voir détails</button>
+                <button onClick={() => handleChooseEvent(event)} className="choose-button">Y aller</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Détails de l'événement */}
       {selectedEvent && (
         <div className="event-details-modal">
           <div className="event-details-content">
             <button className="close-button" onClick={handleCloseDetails}>X</button>
-            <h2>{selectedEvent.title}</h2>
+            <h2>{selectedEvent.nom || selectedEvent.title}</h2>
             <p>Date: {selectedEvent.date}</p>
-            <p>Lieu: {selectedEvent.location}</p>
-            <img src={selectedEvent.image} alt={selectedEvent.title} />
+            <p>Lieu: {selectedEvent.lieu || selectedEvent.location}</p>
+            <img src={selectedEvent.image} alt={selectedEvent.nom || selectedEvent.title} />
             <p>Description de l'événement...</p>
             <button onClick={() => handleChooseEvent(selectedEvent)} className="choose-button">Y aller</button>
             {isLoaded ? (

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { UserProvider, UserContext } from './context/UserContext';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { UserProvider } from './context/UserContext';
 import './App.css';
 import Home from './Components/Pages/Home';
 import Billeterie from './Components/Pages/Billeterie';
@@ -10,6 +10,10 @@ import EventDetails from './Components/EventDetails';
 import Payment from './Components/Pages/Payment';
 import Footer from './Components/Footer';
 import logo from './assets/logo.png';
+import AdminDashboard from './Components/AdminDashboard';
+import { UserContext } from './context/UserContext';
+
+
 
 function Navbar() {
   const { user, setUser } = useContext(UserContext);
@@ -44,9 +48,14 @@ function Navbar() {
             <li>
               <Link to="/login">Se connecter</Link>
             </li>
-          </>
+          </> 
         ) : (
           <>
+           {user.role === 'admin' && (
+              <li>
+                <Link to="/admin/dashboard">Admin Dashboard</Link>
+              </li>
+            )}
             <li className="welcome-message">Bienvenue, {user.pseudonyme} !</li>
             <li>
               <button className="logout-button" onClick={handleLogout}>
@@ -55,6 +64,8 @@ function Navbar() {
               
 
             </li>
+            
+
           </>
         )}
       </ul>
@@ -99,8 +110,10 @@ function App() {
             <Route path="/events" element={<Billeterie />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/login" element={<LoginForm />} />
-            <Route path="/event/:eventId" element={<EventDetails events={weeklyEvents} />} />
+            <Route path="/event/:eventId" element={<EventDetails/>} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          
           </Routes>
           <Footer />
         </div>

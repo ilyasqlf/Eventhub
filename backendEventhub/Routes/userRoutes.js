@@ -1,11 +1,12 @@
 import express from 'express';
 import mysql from '../config/mysql.js';
 
-const router = express.Router();
+
+const router = express.Router(); 
 
 //utilisateurs:
-router.get('/utilisateurs', async (req, res) => {
-    try {
+router.get('/utilisateurs', async (req, res) => { 
+    try { 
         const connection = await mysql.getConnection();
         const [rows] = await connection.execute('SELECT * FROM utilisateurs');
         connection.release();
@@ -52,6 +53,8 @@ router.delete('/utilisateurs/:id', async (req, res) => {
         res.status(500).json({ error: err.messpseudonyme });
     }
 });
+
+
 
 
 

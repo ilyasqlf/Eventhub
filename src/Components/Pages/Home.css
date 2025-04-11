@@ -167,6 +167,7 @@ body {
   position: relative;
   width: 100%;
   height: 180px;
+  overflow: hidden;
 }
 
 .event-image-container img {

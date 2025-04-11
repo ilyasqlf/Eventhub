@@ -7,6 +7,7 @@ export const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+
 });
 
 api.interceptors.request.use((config) => {
@@ -38,5 +39,15 @@ export const authAPI = {
         localStorage.removeItem('user');
     },
 };
+
+export const eventAPI = {
+    getAllEvents: () => api.get('/evenements'), // Récupérer tous les événements
+    getEvent: (id) => api.get(`/evenements/${id}`), // Récupérer un événement par ID
+    createEvent: (eventData) => api.post('/evenements/create', eventData), // Ajouter un événement
+    updateEvent: (id, eventData) => api.put(`/evenements/update/${id}`, eventData), // Modifier un événement
+    deleteEvent: (id) => api.delete(`/evenements/delete/${id}`), // Supprimer un événement
+  };
+
+
 
 export default api;

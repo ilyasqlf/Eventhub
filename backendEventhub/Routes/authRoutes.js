@@ -68,6 +68,15 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    const generateHashedPassword = async () => {
+      const plainPassword = 'admin12345'; // Remplacez par le mot de passe souhaité
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(plainPassword, salt);
+      console.log('Mot de passe haché :', hashedPassword);
+    };
+    
+    generateHashedPassword();
+
     const isPasswordValid = await bcrypt.compare(password, user[0].password);
 
     if (!isPasswordValid) {
